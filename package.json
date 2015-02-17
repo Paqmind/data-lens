@@ -1,0 +1,39 @@
+{
+  "name": "data-lens",
+  "version": "0.1.0",
+  "description": "Data lenses",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --compilers js:6to5/register spec",
+    "test-watch": "mocha --compilers js:6to5/register -w spec",
+    "_doc": "jsdoc index.js",
+    "precommit": "npm test",
+    "prepush": "npm test",
+    "postmerge": "npm install"
+  },
+  "_repository": {
+    "type": "git",
+    "url": "https://github.com/paqmind/data-lens.git"
+  },
+  "keywords": [],
+  "author": "Ivan Kleshnin (ivan@paqmind.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/paqmind/data-lesn/issues"
+  },
+  "homepage": "https://github.com/paqmind/data-lens",
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "husky": "^0.6.2",
+    "immutable": "^3.6.2",
+    "jsdoc": "^3.3.0-beta1",
+    "mocha": "^2.1.0"
+  },
+  "dependencies": {
+    "6to5": "^3.6.5",
+    "lodash.isfunction": "^3.0.1",
+    "lodash.isnumber": "^3.0.0",
+    "lodash.isstring": "^3.0.0",
+    "object.assign": "^1.1.1"
+  }
+}
