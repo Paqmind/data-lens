@@ -1,10 +1,10 @@
 let chai = require("chai");
 let expect = chai.expect;
 let _ = require("object.assign").shim();
-let {Map} = require("immutable");
+let {List, Map} = require("immutable");
 
-let createNativeLens = require("../index").createNativeLens;
-let createImmutableLens = require("../index").createImmutableLens;
+let nativeLens = require("../index").nativeLens;
+let immutableLens = require("../index").immutableLens;
 
 chai.use(function(chai, utils) {
   let Assertion = chai.Assertion;
@@ -26,186 +26,228 @@ chai.use(function(chai, utils) {
 
 describe("Native Lens", function() {
   describe(".get()", function() {
-    it("should return data | depth 0", function() {
+    it("should return data for existing keys", function() {
       let data = {
         model: {
-          username: "foo"
+          username: "foo",
+          tags: ["spam"]
         }
       };
 
-      let lens = createNativeLens("model");
-      expect(lens.get(data)).equals(data.model);
+      expect(nativeLens("model").get(data)).equals({
+        username: "foo",
+        tags: ["spam"]
+      });
+      expect(nativeLens("model.username").get(data)).equals("foo");
+      expect(nativeLens("model.tags").get(data)).equals(["spam"]);
     });
 
-    it("should return data | depth 1", function() {
+    it("should return undefined for missing keys", function() {
       let data = {
         model: {
-          username: "foo"
+          username: "foo",
+          tags: ["spam"]
         }
       };
 
-      let lens = createNativeLens("model.username");
-      expect(lens.get(data)).equals(data.model.username);
-    });
-
-    it("should return undefined for missing keys | depth 0", function() {
-      let data = {
-        model: {
-          username: "foo"
-        }
-      };
-
-      let lens = createNativeLens("model.username.foo");
-      expect(lens.get(data)).to.be.undefined;
-    });
-
-    it("should return undefined for missing keys | depth 1", function() {
-      let data = {
-        model: {
-          username: "foo"
-        }
-      };
-
-      let lens = createNativeLens("model.username.foo.bar");
-      expect(lens.get(data)).to.be.undefined;
+      expect(nativeLens("wtf").get(data)).to.be.undefined;
+      expect(nativeLens("model.wtf").get(data)).to.be.undefined;
+      expect(nativeLens("model.wtf.username").get(data)).to.be.undefined;
+      expect(nativeLens("model.wtf.tags").get(data)).to.be.undefined;
+      expect(nativeLens("model.username.wtf").get(data)).to.be.undefined;
+      expect(nativeLens("model.tags.wtf").get(data)).to.be.undefined;
     });
   });
 
   describe(".set()", function() {
-    it("should return new data | depth 0", function() {
+    it("should return new data for existing keys", function() {
       let data = {
         model: {
-          username: "foo"
+          username: "foo",
+          tags: ["spam"]
         }
       };
-      let lens = createNativeLens("model");
-      expect(lens.set(data, "bar")).equals({model: "bar"});
+
+      expect(nativeLens("model").set(data, "!!!")).equals({
+        model: "!!!"
+      });
+      expect(nativeLens("model.username").set(data, "!!!")).equals({
+        model: {
+          username: "!!!",
+          tags: ["spam"]
+        }
+      });
+      expect(nativeLens("model.tags").set(data, ["!!!"])).equals({
+        model: {
+          username: "foo",
+          tags: ["!!!"]
+        }
+      });
+      expect(data).equals({
+        model: {
+          username: "foo",
+          tags: ["spam"]
+        }
+      });
     });
 
-    it("should return new data | depth 1", function() {
+    it("should return new data for missing keys", function() {
       let data = {
         model: {
           username: "foo"
-        }
+        },
       };
 
-      let lens = createNativeLens("model.username");
-      expect(lens.set(data, "bar")).equals({model: {username: "bar"}});
+      expect(nativeLens("foo").set(data, "xxx")).equals({
+        model: {
+          username: "foo"
+        },
+        foo: "xxx"
+      });
+      expect(nativeLens("model.foo").set(data, "xxx")).equals({
+        model: {
+          username: "foo", foo: "xxx"},
+      });
+      expect(data).equals({
+        model: {
+          username: "foo"},
+      });
     });
 
-    it("should do nothing for missing keys | depth 0", function() {
+    it("should not throw for invalid keys", function() {
       let data = {
-        model: {
-          username: "foo"
-        }
+        username: "foo",
+        tags: ["spam"]
       };
 
-      let lens = createNativeLens("model.username.foo");
-      expect(lens.set(data, "xxx")).equals({model: {username: "foo"}});
-    });
-
-    it("should do nothing for missing keys | depth 1", function() {
-      let data = {
-        model: {
-          username: "foo"
-        }
-      };
-
-      let lens = createNativeLens("model.username.foo.bar");
-      expect(lens.set(data, "xxx")).equals({model: {username: "foo"}});
+      expect(nativeLens("username.foo").set(data, "xxx")).equals({
+        username: "foo",
+        tags: ["spam"]
+      });
+      expect(nativeLens("username.foo.bar").set(data, "xxx")).equals({
+        username: "foo",
+        tags: ["spam"]
+      });
+      expect(data).equals({
+        username: "foo",
+        tags: ["spam"]
+      });
     });
   });
 });
 
 describe("Immutable Lens", function() {
   describe(".get()", function() {
-    it("should return immutable data | depth 0", function() {
+    it("should return data for existing keys", function() {
       let data = Map({
         model: Map({
-          username: "foo"
+          username: "foo",
+          tags: List(["spam"])
         })
       });
 
-      let lens = createImmutableLens("model");
-      expect(lens.get(data)).equals(data.get("model"));
+      expect(immutableLens("model").get(data)).equals(Map({
+        username: "foo",
+        tags: List(["spam"])
+      }));
+      expect(immutableLens("model.username").get(data)).equals("foo");
+      expect(immutableLens("model.tags").get(data)).equals(List(["spam"]));
     });
 
-    it("should return immutable data | depth 1", function() {
+    it("should return undefined for missing keys", function() {
       let data = Map({
         model: Map({
-          username: "foo"
+          username: "foo",
+          tags: List(["spam"])
         })
       });
 
-      let lens = createImmutableLens("model.username");
-      expect(lens.get(data)).equals(data.get("model").get("username"));
-    });
-
-    it("should return undefined for missing keys | depth 0", function() {
-      let data = Map({
-        model: Map({
-          username: "foo"
-        })
-      });
-
-      let lens = createImmutableLens("model.username.foo");
-      expect(lens.get(data)).to.be.undefined;
-    });
-
-    it("should return undefined for missing keys | depth 1", function() {
-      let data = Map({
-        model: Map({
-          username: "foo"
-        })
-      });
-
-      let lens = createImmutableLens("model.username.foo.bar");
-      expect(lens.get(data)).to.be.undefined;
+      expect(immutableLens("wtf").get(data)).to.be.undefined;
+      expect(immutableLens("model.wtf").get(data)).to.be.undefined;
+      expect(immutableLens("model.wtf.username").get(data)).to.be.undefined;
+      expect(immutableLens("model.wtf.tags").get(data)).to.be.undefined;
+      expect(immutableLens("model.username.wtf").get(data)).to.be.undefined;
+      expect(immutableLens("model.tags.wtf").get(data)).to.be.undefined;
     });
   });
 
   describe(".set()", function() {
-    it("should return new immutable data | depth 0", function() {
+    it("should return new data for existing keys", function() {
       let data = Map({
         model: Map({
-          username: "foo"
+          username: "foo",
+          tags: List(["spam"])
         })
       });
-      let lens = createImmutableLens("model");
-      expect(lens.set(data, "bar")).equals(Map({model: "bar"}));
+
+      expect(immutableLens("model").set(data, "!!!")).equals(Map({
+        model: "!!!"
+      }));
+      expect(immutableLens("model.username").set(data, "!!!")).equals(Map({
+        model: Map({
+          username: "!!!",
+          tags: List(["spam"])
+        })
+      }));
+      expect(immutableLens("model.tags").set(data, List(["!!!"]))).equals(Map({
+        model: Map({
+          username: "foo",
+          tags: List(["!!!"])
+        })
+
+      }));
+      expect(data).equals(Map({
+        model: Map({
+          username: "foo",
+          tags: List(["spam"])
+        })
+      }));
     });
 
-    it("should return new immutable data | depth 1", function() {
+    it("should return new data for missing keys", function() {
       let data = Map({
         model: Map({
-          username: "foo"
+          username: "foo",
         })
       });
 
-      let lens = createImmutableLens("model.username");
-      expect(lens.set(data, "bar")).equals(Map({model: Map({username: "bar"})}));
+      expect(immutableLens("foo").set(data, "xxx")).equals(Map({
+        model: Map({
+          username: "foo"
+        }),
+        foo: "xxx",
+      }));
+      expect(immutableLens("model.foo").set(data, "xxx")).equals(Map({
+        model: Map({
+          username: "foo",
+          foo: "xxx"
+        }),
+      }));
+      expect(data).equals(Map({
+        model: Map({
+          username: "foo"
+        })
+      }));
     });
 
-    it("should do nothing for missing keys | depth 0", function() {
+    it("should not throw for invalid keys", function() {
       let data = Map({
-        model: Map({
-          username: "foo"
-        })
+        username: "foo",
+        tags: List(["spam"])
       });
 
-      let lens = createImmutableLens("model.username.foo");
-      expect(lens.set(data, "xxx")).equals(Map({model: Map({username: "foo"})}));
-    });
-
-    it("should do nothing for missing keys | depth 1", function() {
-      let data = Map({
-        model: Map({
-          username: "foo"
-        })
-      });
-
-      let lens = createImmutableLens("model.username.foo.bar");
-      expect(lens.set(data, "xxx")).equals(Map({model: Map({username: "foo"})}));
+      expect(immutableLens("username.foo").set(data, "xxx")).equals(Map({
+        username: "foo",
+        tags: List(["spam"])
+      }));
+      expect(immutableLens("username.foo.bar").set(data, "xxx")).equals(Map({
+        username: "foo",
+        tags: List(["spam"])
+      }));
+      expect(data).equals(Map({
+        username: "foo",
+        tags: List(["spam"])
+      }));
     });
   });
 });

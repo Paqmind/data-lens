@@ -1,7 +1,7 @@
 "use strict";
 
-exports.createNativeLens = createNativeLens;
-exports.createImmutableLens = createImmutableLens;
+exports.nativeLens = nativeLens;
+exports.immutableLens = immutableLens;
 var isFunction = require("lodash.isfunction");
 var isString = require("lodash.isstring");
 var isNumber = require("lodash.isnumber");
@@ -94,7 +94,7 @@ function Lens(getter, setter) {
   };
 }
 
-function createNativeLens(key) {
+function nativeLens(key) {
   var lens = key.split(".").map(function (k) {
     return Lens(createNativeGetter(k), createNativeSetter(k));
   });
@@ -103,7 +103,7 @@ function createNativeLens(key) {
   });
 }
 
-function createImmutableLens(key) {
+function immutableLens(key) {
   var lens = key.split(".").map(function (k) {
     return Lens(createImmutableGetter(k), createImmutableSetter(k));
   });

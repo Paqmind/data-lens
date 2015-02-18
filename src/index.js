@@ -92,14 +92,14 @@ function Lens(getter, setter) {
   };
 }
 
-export function createNativeLens(key) {
+export function nativeLens(key) {
   let lens = key.split(".").map((k) => {
     return Lens(createNativeGetter(k), createNativeSetter(k))
   });
   return lens.reduce((lens, nextLens) => lens.compose(nextLens));
 }
 
-export function createImmutableLens(key) {
+export function immutableLens(key) {
   let lens = key.split(".").map((k) => {
     return Lens(createImmutableGetter(k), createImmutableSetter(k))
   });
