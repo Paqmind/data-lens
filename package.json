@@ -4,8 +4,8 @@
   "description": "Data lenses",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --compilers js:6to5/register spec",
-    "test-watch": "mocha --compilers js:6to5/register -w spec",
+    "test": "mocha --compilers js:6to5/register specs",
+    "test-watch": "mocha --compilers js:6to5/register -w specs",
     "_doc": "jsdoc index.js",
     "precommit": "npm test",
     "prepush": "npm test",
