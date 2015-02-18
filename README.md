@@ -1,7 +1,9 @@
-# data.lens
+# JavaScript data lens
 
-Port of https://github.com/Laiff/data.lens
+Port of [Laiff/data.lens](https://github.com/Laiff/data.lens)
 
-Written in ES6 (uses [Babel](https://babeljs.io) transpiler to precompile)
+Differences:
 
-Aims to support ImmutableJS
+1. Written in ES6 (uses [Babel](https://babeljs.io) transpiler to precompile)
+2. Aims to support [ImmutableJS](http://facebook.github.io/immutable-js/docs/)
+3. Do not throw at missing keys
