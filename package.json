@@ -24,7 +24,7 @@
   "author": "Ivan Kleshnin (ivan@paqmind.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/paqmind/data-lesn/issues"
+    "url": "https://github.com/paqmind/data-lens/issues"
   },
   "homepage": "https://github.com/paqmind/data-lens",
   "devDependencies": {
