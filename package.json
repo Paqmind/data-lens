@@ -15,7 +15,11 @@
     "type": "git",
     "url": "https://github.com/paqmind/data-lens.git"
   },
-  "keywords": [],
+  "keywords": [
+    "lenses",
+    "experimental",
+    "prerelease"
+  ],
   "author": "Ivan Kleshnin (ivan@paqmind.com)",
   "license": "MIT",
   "bugs": {
