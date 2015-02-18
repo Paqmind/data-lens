@@ -1,6 +1,5 @@
 let chai = require("chai");
 let expect = chai.expect;
-let _ = require("object.assign").shim();
 let {List, Map} = require("immutable");
 
 let nativeLens = require("../index").nativeLens;
