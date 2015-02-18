@@ -24,6 +24,99 @@ chai.use(function(chai, utils) {
   });
 });
 
+describe("Native Lens", function() {
+  describe(".get()", function() {
+    it("should return data | depth 0", function() {
+      let data = {
+        model: {
+          username: "foo"
+        }
+      };
+
+      let lens = createNativeLens("model");
+      expect(lens.get(data)).equals(data.model);
+    });
+
+    it("should return data | depth 1", function() {
+      let data = {
+        model: {
+          username: "foo"
+        }
+      };
+
+      let lens = createNativeLens("model.username");
+      expect(lens.get(data)).equals(data.model.username);
+    });
+
+    it("should return undefined for missing keys | depth 0", function() {
+      let data = {
+        model: {
+          username: "foo"
+        }
+      };
+
+      let lens = createNativeLens("model.username.foo");
+      expect(lens.get(data)).to.be.undefined;
+    });
+
+    it("should return undefined for missing keys | depth 1", function() {
+      let data = {
+        model: {
+          username: "foo"
+        }
+      };
+
+      let lens = createNativeLens("model.username.foo.bar");
+      expect(lens.get(data)).to.be.undefined;
+    });
+  });
+
+  describe(".set()", function() {
+    it("should return new data | depth 0", function() {
+      let data = {
+        model: {
+          username: "foo"
+        }
+      };
+      let lens = createNativeLens("model");
+      expect(lens.set(data, "bar")).equals({model: "bar"});
+    });
+
+    it("should return new data | depth 1", function() {
+      let data = {
+        model: {
+          username: "foo"
+        }
+      };
+
+      let lens = createNativeLens("model.username");
+      expect(lens.set(data, "bar")).equals({model: {username: "bar"}});
+    });
+
+    it("should do nothing for missing keys | depth 0", function() {
+      let data = {
+        model: {
+          username: "foo"
+        }
+      };
+
+      let lens = createNativeLens("model.username.foo");
+      expect(lens.set(data, "xxx")).equals({model: {username: "foo"}});
+    });
+
+    it("should do nothing for missing keys | depth 1", function() {
+      let data = {
+        model: {
+          username: "foo"
+        }
+      };
+
+      let lens = createNativeLens("model.username.foo.bar");
+      expect(lens.set(data, "xxx")).equals({model: {username: "foo"}});
+    });
+  });
+});
+
 describe("Immutable Lens", function() {
   describe(".get()", function() {
     it("should return immutable data | depth 0", function() {
