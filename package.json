@@ -4,8 +4,9 @@
   "description": "Data lenses",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --compilers js:6to5/register specs",
-    "test-watch": "mocha --compilers js:6to5/register -w specs",
+    "build": "babel -t ./src --out-dir ./",
+    "test": "mocha --compilers js:babel/register specs",
+    "test-watch": "mocha --compilers js:babel/register -w specs",
     "_doc": "jsdoc index.js",
     "precommit": "npm test",
     "prepush": "npm test",
@@ -34,7 +35,7 @@
     "mocha": "^2.1.0"
   },
   "dependencies": {
-    "6to5": "^3.6.5",
+    "babel": "^4.3.0",
     "lodash.isfunction": "^3.0.1",
     "lodash.isnumber": "^3.0.0",
     "lodash.isstring": "^3.0.0",
