@@ -3,7 +3,7 @@ let expect = chai.expect;
 let _ = require("object.assign").shim();
 let {Map} = require("immutable");
 
-let createLens = require("../index").createLens;
+let createNativeLens = require("../index").createNativeLens;
 let createImmutableLens = require("../index").createImmutableLens;
 
 chai.use(function(chai, utils) {

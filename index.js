@@ -19,7 +19,7 @@ function isImmutable(data) {
          isNumber(data);
 }
 
-function createGetter(key) {
+function createNativeGetter(key) {
   return function getter(data) {
     if (isImmutable(data)) {
       return undefined;
@@ -30,7 +30,7 @@ function createGetter(key) {
 }
 
 function createImmutableGetter(key) {
-  let getter = createGetter(key);
+  let getter = createNativeGetter(key);
   return function immutableGetter(data) {
     if (isImmutable(data)) {
       return undefined;
@@ -43,7 +43,7 @@ function createImmutableGetter(key) {
   };
 }
 
-function createSetter(key) {
+function createNativeSetter(key) {
   return function setter(data, value) {
     if (isImmutable(data)) {
       return data;
@@ -59,7 +59,7 @@ function createSetter(key) {
 }
 
 function createImmutableSetter(key) {
-  let setter = createSetter(key);
+  let setter = createNativeSetter(key);
   return function immutableSetter(data, value) {
     if (isImmutable(data)) {
       return data;
@@ -92,9 +92,9 @@ function Lens(getter, setter) {
   };
 }
 
-export function createLens(key) {
+export function createNativeLens(key) {
   let lens = key.split(".").map((k) => {
-    return Lens(createGetter(k), createSetter(k))
+    return Lens(createNativeGetter(k), createNativeSetter(k))
   });
   return lens.reduce((lens, nextLens) => lens.compose(nextLens));
 }
