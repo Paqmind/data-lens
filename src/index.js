@@ -17,10 +17,14 @@ function isImmutable(data) {
 
 function createNativeGetter(key) {
   return function getter(data) {
-    if (isImmutable(data)) {
-      return undefined;
+    if (key) {
+      if (isImmutable(data)) {
+        return undefined;
+      } else {
+        return data[key];
+      }
     } else {
-      return data[key];
+      return data;
     }
   };
 }
@@ -28,28 +32,36 @@ function createNativeGetter(key) {
 function createImmutableGetter(key) {
   let getter = createNativeGetter(key);
   return function immutableGetter(data) {
-    if (isImmutable(data)) {
-      return undefined;
-    }
-    else if (data.get instanceof Function) {
-      return data.get(key);
+    if (key) {
+      if (isImmutable(data)) {
+        return undefined;
+      }
+      else if (data.get instanceof Function) {
+        return data.get(key);
+      } else {
+        return getter(data);
+      }
     } else {
-      return getter(data);
+      return data;
     }
   };
 }
 
 function createNativeSetter(key) {
   return function setter(data, value) {
-    if (isImmutable(data)) {
-      return data;
+    if (key) {
+      if (isImmutable(data)) {
+        return data;
+      } else {
+        let copy = properties(data).reduce((memo, val) => {
+          memo[val] = data[val];
+          return memo;
+        }, {});
+        copy[key] = value;
+        return copy;
+      }
     } else {
-      let copy = properties(data).reduce((memo, val) => {
-        memo[val] = data[val];
-        return memo;
-      }, {});
-      copy[key] = value;
-      return copy;
+      return data;
     }
   };
 }
@@ -57,13 +69,17 @@ function createNativeSetter(key) {
 function createImmutableSetter(key) {
   let setter = createNativeSetter(key);
   return function immutableSetter(data, value) {
-    if (isImmutable(data)) {
-      return data;
-    }
-    else if (data.set instanceof Function) {
-      return data.set(key, value);
+    if (key) {
+      if (isImmutable(data)) {
+        return data;
+      }
+      else if (data.set instanceof Function) {
+        return data.set(key, value);
+      } else {
+        return setter(data, value);
+      }
     } else {
-      return setter(data, value);
+      return data;
     }
   };
 }

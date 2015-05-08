@@ -33,6 +33,14 @@ describe("Native Lens", function() {
   });
 
   describe(".get()", function() {
+    it("should return original object for empty key", function() {
+      let data = {
+        foo: "bar"
+      };
+
+      expect(nativeLens("").get(data)).to.be.eql(data);
+    });
+
     it("should return data for existing keys", function() {
       let data = {
         model: {
@@ -67,6 +75,14 @@ describe("Native Lens", function() {
   });
 
   describe(".set()", function() {
+    it("should return original object for empty key", function() {
+      let data = {
+        foo: "bar"
+      };
+
+      expect(nativeLens("").set(data, "whatever")).to.be.eql(data);
+    });
+
     it("should return new data for existing keys", function() {
       let data = {
         model: {
@@ -153,6 +169,14 @@ describe("Immutable Lens", function() {
   });
 
   describe(".get()", function() {
+    it("should return original object for empty key", function() {
+      let data = Map({
+        foo: "bar"
+      });
+
+      expect(immutableLens("").get(data)).to.be.eql(data);
+    });
+
     it("should return data for existing keys", function() {
       let data = Map({
         model: Map({
@@ -187,6 +211,14 @@ describe("Immutable Lens", function() {
   });
 
   describe(".set()", function() {
+    it("should return original object for empty key", function() {
+      let data = Map({
+        foo: "bar"
+      });
+
+      expect(immutableLens("").set(data, "whatever")).to.be.eql(data);
+    });
+
     it("should return new data for existing keys", function() {
       let data = Map({
         model: Map({
