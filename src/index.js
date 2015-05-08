@@ -1,7 +1,3 @@
-let isFunction = require("lodash.isfunction");
-let isString = require("lodash.isstring");
-let isNumber = require("lodash.isnumber");
-
 function properties(obj) {
   let key, lst = [];
   for (key in obj) {
@@ -15,8 +11,8 @@ function properties(obj) {
 function isImmutable(data) {
   return data === undefined ||
          data === null ||
-         isString(data) ||
-         isNumber(data);
+         typeof data == "string" ||
+         typeof data == "number";
 }
 
 function createNativeGetter(key) {
@@ -35,7 +31,7 @@ function createImmutableGetter(key) {
     if (isImmutable(data)) {
       return undefined;
     }
-    else if (isFunction(data.get)) {
+    else if (data.get instanceof Function) {
       return data.get(key);
     } else {
       return getter(data);
@@ -64,7 +60,7 @@ function createImmutableSetter(key) {
     if (isImmutable(data)) {
       return data;
     }
-    else if (isFunction(data.set)) {
+    else if (data.set instanceof Function) {
       return data.set(key, value);
     } else {
       return setter(data, value);
