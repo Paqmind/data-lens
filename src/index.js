@@ -30,7 +30,6 @@ function createNativeGetter(key) {
 }
 
 function createImmutableGetter(key) {
-  let getter = createNativeGetter(key);
   return function immutableGetter(data) {
     if (key) {
       if (isImmutable(data)) {
@@ -39,7 +38,7 @@ function createImmutableGetter(key) {
       else if (data.get instanceof Function) {
         return data.get(key);
       } else {
-        return getter(data);
+        return createNativeGetter(key)(data);
       }
     } else {
       return data;
@@ -67,7 +66,6 @@ function createNativeSetter(key) {
 }
 
 function createImmutableSetter(key) {
-  let setter = createNativeSetter(key);
   return function immutableSetter(data, value) {
     if (key) {
       if (isImmutable(data)) {
@@ -76,7 +74,7 @@ function createImmutableSetter(key) {
       else if (data.set instanceof Function) {
         return data.set(key, value);
       } else {
-        return setter(data, value);
+        return createNativeSetter(key)(data, value);
       }
     } else {
       return data;
