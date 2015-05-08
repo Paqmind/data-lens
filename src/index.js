@@ -89,6 +89,9 @@ function Lens(getter, setter) {
 }
 
 export function nativeLens(key) {
+  if (typeof key != "string") {
+    throw new Error(`key must be of string type, got ${typeof key}`);
+  }
   let lens = key.split(".").map((k) => {
     return Lens(createNativeGetter(k), createNativeSetter(k))
   });
@@ -96,6 +99,9 @@ export function nativeLens(key) {
 }
 
 export function immutableLens(key) {
+  if (typeof key != "string") {
+    throw new Error(`key must be of string type, got ${typeof key}`);
+  }
   let lens = key.split(".").map((k) => {
     return Lens(createImmutableGetter(k), createImmutableSetter(k))
   });

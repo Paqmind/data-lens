@@ -2,8 +2,8 @@ let chai = require("chai");
 let expect = chai.expect;
 let {List, Map} = require("immutable");
 
-let nativeLens = require("../index").nativeLens;
-let immutableLens = require("../index").immutableLens;
+let nativeLens = require("../src/index").nativeLens;
+let immutableLens = require("../src/index").immutableLens;
 
 chai.use(function(chai, utils) {
   let Assertion = chai.Assertion;
@@ -13,7 +13,7 @@ chai.use(function(chai, utils) {
   Assertion.addMethod("equals", function assertImmutableEql(obj, msg) {
     if (msg) flag(this, "message", msg);
     this.assert(
-        obj.equals ? obj.equals(flag(this, "object")) : utils.eql(obj, flag(this, "object"))
+        obj.equals ? obj.equals(this._obj) : utils.eql(obj, this._obj)
       , "expected #{this} to be equal #{exp}"
       , "expected #{this} to not be equal #{exp}"
       , obj
@@ -24,6 +24,14 @@ chai.use(function(chai, utils) {
 });
 
 describe("Native Lens", function() {
+  it("should throw when key is not string", function() {
+    let data = {};
+
+    expect(() => nativeLens(undefined)).to.throw("key must be of string type, got undefined");
+    expect(() => nativeLens(null)).to.throw("key must be of string type, got object");
+    expect(() => nativeLens(42)).to.throw("key must be of string type, got number");
+  });
+
   describe(".get()", function() {
     it("should return data for existing keys", function() {
       let data = {
@@ -136,6 +144,14 @@ describe("Native Lens", function() {
 });
 
 describe("Immutable Lens", function() {
+  it("should throw when key is not string", function() {
+    let data = {};
+
+    expect(() => immutableLens(undefined)).to.throw("key must be of string type, got undefined");
+    expect(() => immutableLens(null)).to.throw("key must be of string type, got object");
+    expect(() => immutableLens(42)).to.throw("key must be of string type, got number");
+  });
+
   describe(".get()", function() {
     it("should return data for existing keys", function() {
       let data = Map({
