@@ -81,7 +81,7 @@ describe("Lens", function() {
       expect(Lens("").set(data, "whatever")).to.be.eql(data);
     });
 
-    it("should return new data for existing keys", function() {
+    it("should return data for existing keys", function() {
       let data = {
         model: {
           username: "foo",
@@ -112,7 +112,7 @@ describe("Lens", function() {
       });
     });
 
-    it("should return new data for missing keys", function() {
+    it("should return data for missing keys", function() {
       let data = {
         model: {
           username: "foo"
