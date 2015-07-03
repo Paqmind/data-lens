@@ -1,0 +1,14 @@
+  "scripts": {
+    "webpack": "webpack src/index.js -t babelify --standalone Cycle --outfile dist/cycle.js",
+    "uglify": "uglifyjs dist/cycle.js -o dist/cycle.min.js",
+    "dist": "npm run browserify && npm run uglify",
+    "docs": "node ./scripts/make-api-docs.js",
+    "precompile-lib": "rm -rf lib/ && mkdir -p lib",
+    "compile-lib": "babel -d lib/ src/",
+    "prepublish": "npm run compile-lib",
+  }
+
+
+    "precommit": "npm test",
+    "prepush": "npm test",
+    "postmerge": "npm install"

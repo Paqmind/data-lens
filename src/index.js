@@ -1,20 +1,6 @@
-function properties(obj) {
-  let key, lst = [];
-  for (key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      lst.push(key);
-    }
-  }
-  return lst;
-}
+import {getProperties, isImmutable} from "./helpers";
 
-function isImmutable(data) {
-  return data === undefined ||
-         data === null ||
-         typeof data == "string" ||
-         typeof data == "number";
-}
-
+// LENS ============================================================================================
 function createGetter(key) {
   return function getter(data) {
     if (key) {
@@ -33,16 +19,19 @@ function createSetter(key) {
   return function setter(data, value) {
     if (key) {
       if (data === undefined) {
-        return {[key]: value};
+        return [value];
       } else if (isImmutable(data)) {
         return data;
       } else {
-        let copy = properties(data).reduce((memo, val) => {
-          memo[val] = data[val];
-          return memo;
-        }, {});
-        copy[key] = value;
-        return copy;
+        if (data instanceof Array) {
+          let copy = data.slice();
+          copy[key] = value;
+          return copy;
+        } else {
+          let copy = Object.assign({}, data);
+          copy[key] = value;
+          return copy;
+        }
       }
     } else {
       return data;

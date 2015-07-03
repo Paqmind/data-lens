@@ -1,22 +1,29 @@
 {
   "name": "paqmind.data-lens",
   "version": "0.3.0",
-  "description": "Data lenses",
-  "main": "index.js",
+  "description": "Data lens",
+  "main": "lib/index.js",
   "scripts": {
-    "build": "babel -t ./src --out-dir ./",
-    "test": "mocha --compilers js:babel/register specs",
-    "test-watch": "mocha --compilers js:babel/register -w specs",
-    "_doc": "jsdoc index.js",
-    "precommit": "npm test",
-    "prepush": "npm test",
-    "postmerge": "npm install"
+    "eslint": "eslint src",
+    "mocha": "mocha --compilers js:babel/register specs",
+    "test": "npm run eslint -s && npm run mocha -s",
+    "webpack": "webpack --progress --profile --colors",
+    "precompile-lib": "rm -rf lib/ && mkdir -p lib",
+    "compile-lib": "babel -d lib/ src/",
+    "prepublish": "npm run compile-lib && npm run webpack",
+    "release-patch": "git checkout master && npm run webpack && git commit -a -m 'Build dist/' && npm version patch && git push origin master --tags && npm publish --access=public",
+    "release-minor": "git checkout master && npm run webpack && git commit -a -m 'Build dist/' && npm version minor && git push origin master --tags && npm publish --access=public",
+    "release-major": "git checkout master && npm run webpack && git commit -a -m 'Build dist/' && npm version major && git push origin master --tags && npm publish --access=public",
+    "release": "npm run release-patch"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/paqmind/data-lens.git"
   },
-  "keywords": ["data", "lenses"],
+  "keywords": [
+    "data",
+    "lenses"
+  ],
   "author": "Ivan Kleshnin (ivan@paqmind.com)",
   "license": "MIT",
   "bugs": {
@@ -24,10 +31,14 @@
   },
   "homepage": "https://github.com/paqmind/data-lens",
   "devDependencies": {
-    "babel": "^4.3.0",
-    "chai": "^2.0.0",
-    "husky": "^0.6.2",
-    "jsdoc": "^3.3.0-beta1",
-    "mocha": "^2.1.0"
+    "babel": "^5.6.14",
+    "babel-core": "^5.6.15",
+    "babel-eslint": "^3.1.20",
+    "babel-loader": "^5.2.2",
+    "chai": "^3.0.0",
+    "eslint": "^0.24.0",
+    "mocha": "^2.2.5",
+    "node-libs-browser": "^0.5.2",
+    "webpack": "^1.10.1"
   }
 }

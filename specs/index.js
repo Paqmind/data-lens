@@ -3,163 +3,105 @@ let expect = chai.expect;
 
 let Lens = require("../src/index");
 
-chai.use(function(chai, utils) {
-  let Assertion = chai.Assertion;
-  let toString = Object.prototype.toString;
-  let flag = utils.flag;
-
-  Assertion.addMethod("equals", function assertImmutableEql(obj, msg) {
-    if (msg) flag(this, "message", msg);
-    this.assert(
-        obj.equals ? obj.equals(this._obj) : utils.eql(obj, this._obj)
-      , "expected #{this} to be equal #{exp}"
-      , "expected #{this} to not be equal #{exp}"
-      , obj
-      , this._obj
-      , true
-    );
-  });
-});
-
-describe("Lens", function() {
-  it("should throw when key is not string", function() {
-    let data = {};
-
+describe("Lens", function () {
+  it("should throw for non-string keys", function () {
     expect(() => Lens(undefined)).to.throw("key must be of string type, got undefined");
     expect(() => Lens(null)).to.throw("key must be of string type, got object");
     expect(() => Lens(42)).to.throw("key must be of string type, got number");
   });
 
-  describe(".get()", function() {
-    it("should return original object for empty key", function() {
-      let data = {
-        foo: "bar"
-      };
-
-      expect(Lens("").get(data)).to.be.eql(data);
+  describe(".get()", function () {
+    it("should return original data for empty keys", function () {
+      expect(Lens("").get({foo: "bar"})).eql({foo: "bar"});
+      expect(Lens("").get(["foo", "bar"])).eql(["foo", "bar"]);
     });
 
-    it("should return data for existing keys", function() {
-      let data = {
-        model: {
-          username: "foo",
-          tags: ["spam"]
-        }
-      };
-
-      expect(Lens("model").get(data)).equals({
-        username: "foo",
-        tags: ["spam"]
+    describe("flat data", function () {
+      it("should return values for existing Object keys", function () {
+        expect(Lens("username").get({username: "foo"})).eql("foo");
       });
-      expect(Lens("model.username").get(data)).equals("foo");
-      expect(Lens("model.tags").get(data)).equals(["spam"]);
+
+      it("should return values for existing Array offsets", function () {
+        expect(Lens("0").get(["foo", "bar"])).eql("foo");
+        expect(Lens("1").get(["foo", "bar"])).eql("bar");
+      });
+
+      it("should return undefined for missing Object keys", function () {
+        expect(Lens("wtf").get({username: "foo"})).eql(undefined);
+        expect(Lens("username.wtf").get({username: "foo"})).eql(undefined);
+      });
+
+      it("should return undefined for missing Array offsets", function () {
+        expect(Lens("-1").get(["foo", "bar"])).eql(undefined);
+        expect(Lens("2").get(["foo", "bar"])).eql(undefined);
+      });
     });
 
-    it("should return undefined for missing keys", function() {
-      let data = {
-        model: {
-          username: "foo",
-          tags: ["spam"]
-        }
-      };
+    describe("nested data", function () {
+      it("should return values for existing Object keys", function () {
+        expect(Lens("model").get({model: {username: "foo"}})).eql({username: "foo"});
+        expect(Lens("model.username").get({model: {username: "foo"}})).eql("foo");
+      });
 
-      expect(Lens("wtf").get(data)).to.be.undefined;
-      expect(Lens("model.wtf").get(data)).to.be.undefined;
-      expect(Lens("model.wtf.username").get(data)).to.be.undefined;
-      expect(Lens("model.wtf.tags").get(data)).to.be.undefined;
-      expect(Lens("model.username.wtf").get(data)).to.be.undefined;
-      expect(Lens("model.tags.wtf").get(data)).to.be.undefined;
+      it("should return values for existing Array offsets", function () {
+        expect(Lens("tags.0").get({tags: ["foo", "bar"]})).eql("foo");
+        expect(Lens("tags.1").get({tags: ["foo", "bar"]})).eql("bar");
+      });
+
+      it("should return undefined for missing Object keys", function () {
+        expect(Lens("model.wtf").get({model: {username: "foo"}})).eql(undefined);
+        expect(Lens("model.username.wtf").get({model: {username: "foo"}})).eql(undefined);
+      });
+
+      it("should return undefined for missing Array offsets", function () {
+        expect(Lens("tags.-1").get({tags: ["foo", "bar"]})).eql(undefined);
+        expect(Lens("tags.2").get({tags: ["foo", "bar"]})).eql(undefined);
+      });
     });
   });
 
-  describe(".set()", function() {
-    it("should return original object for empty key", function() {
-      let data = {
-        foo: "bar"
-      };
-
-      expect(Lens("").set(data, "whatever")).to.be.eql(data);
+  describe(".set()", function () {
+    it("should return original data for empty keys", function () {
+      expect(Lens("").set({foo: "bar"}, "whatever")).eql({foo: "bar"});
+      expect(Lens("").set(["foo", "bar"], "whatever")).eql(["foo", "bar"]);
     });
 
-    it("should return data for existing keys", function() {
-      let data = {
-        model: {
-          username: "foo",
-          tags: ["spam"]
-        }
-      };
+    it("should not mutate original data", function () {
+      let data = {foo: "bar"};
 
-      expect(Lens("model").set(data, "!!!")).equals({
-        model: "!!!"
+      Lens("foo").set(data, "spam");
+
+      expect(data).eql({foo: "bar"});
+    });
+
+    describe("flat data", function () {
+      it("should return 'updated' values for Object keys", function () {
+        expect(Lens("username").set({username: "john"}, "jack")).eql({username: "jack"});
+        expect(Lens("password").set({username: "john"}, "root")).eql({username: "john", password: "root"});
+        expect(Lens("access").set({}, "admin")).eql({access: "admin"});
       });
-      expect(Lens("model.username").set(data, "!!!")).equals({
-        model: {
-          username: "!!!",
-          tags: ["spam"]
-        }
-      });
-      expect(Lens("model.tags").set(data, ["!!!"])).equals({
-        model: {
-          username: "foo",
-          tags: ["!!!"]
-        }
-      });
-      expect(data).equals({
-        model: {
-          username: "foo",
-          tags: ["spam"]
-        }
+
+      it("should return 'updated' values for Array offsets", function () {
+        expect(Lens("0").set(["foo", "bar"], "spam")).eql(["spam", "bar"]);
+        expect(Lens("1").set(["foo", "bar"], "spam")).eql(["foo", "spam"]);
+        expect(Lens("2").set(["foo", "bar"], "spam")).eql(["foo", "bar", "spam"]);
+        expect(Lens("2").set([], "foo")).eql([, , "foo"]);
       });
     });
 
-    it("should return data for missing keys", function() {
-      let data = {
-        model: {
-          username: "foo"
-        },
-      };
+    describe("nested data", function () {
+      it("should return 'updated' values for Object keys", function () {
+        expect(Lens("model.username").set({model: {username: "john"}}, "jack")).eql({model: {username: "jack"}});
+        expect(Lens("model.password").set({model: {username: "john"}}, "root")).eql({model: {username: "john", password: "root"}});
+        expect(Lens("model.access").set({model: {}}, "admin")).eql({model: {access: "admin"}});
+      });
 
-      expect(Lens("foo").set(data, "xxx")).equals({
-        model: {
-          username: "foo"
-        },
-        foo: "xxx"
+      it("should return 'updated' values for Array offsets", function () {
+        expect(Lens("tags.0").set({tags: ["foo", "bar"]}, "spam")).eql({tags: ["spam", "bar"]});
+        expect(Lens("tags.1").set({tags: ["foo", "bar"]}, "spam")).eql({tags: ["foo", "spam"]});
+        expect(Lens("tags.2").set({tags: ["foo", "bar"]}, "spam")).eql({tags: ["foo", "bar", "spam"]});
+        expect(Lens("tags.2").set({tags: []}, "foo")).eql({tags: [, , "foo"]});
       });
-      expect(Lens("model.foo").set(data, "xxx")).equals({
-        model: {
-          username: "foo", foo: "xxx"},
-      });
-      expect(data).equals({
-        model: {
-          username: "foo"},
-      });
-    });
-
-    it("should not throw for invalid keys", function() {
-      let data = {
-        username: "foo",
-        tags: ["spam"]
-      };
-
-      expect(Lens("username.foo").set(data, "xxx")).equals({
-        username: "foo",
-        tags: ["spam"]
-      });
-      expect(Lens("username.foo.bar").set(data, "xxx")).equals({
-        username: "foo",
-        tags: ["spam"]
-      });
-      expect(data).equals({
-        username: "foo",
-        tags: ["spam"]
-      });
-    });
-
-    it("should create nested data stuctures if possible", function() {
-      let data = {};
-
-      expect(Lens("foo").set(data, "xxx")).equals({foo: "xxx"});
-      expect(Lens("foo.bar").set(data, "xxx")).equals({foo: {bar: "xxx"}});
     });
   });
 });
