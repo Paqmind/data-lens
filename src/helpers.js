@@ -15,6 +15,10 @@ function isImmutable(data) {
          typeof data == "number";
 }
 
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 export default {
-  getProperties, isImmutable,
+  getProperties, isImmutable, isNumeric,
 };

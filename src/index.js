@@ -1,11 +1,12 @@
-import {getProperties, isImmutable} from "./helpers";
+import {inspect} from "util";
+import {getProperties, isImmutable, isNumeric} from "./helpers";
 
 // LENS ============================================================================================
 function createGetter(key) {
   return function getter(data) {
     if (key) {
       if (isImmutable(data)) {
-        return undefined;
+        throw new Error(`can't get key ${inspect(key)} from immutable data ${inspect(data)}`);
       } else {
         return data[key];
       }
@@ -18,10 +19,17 @@ function createGetter(key) {
 function createSetter(key) {
   return function setter(data, value) {
     if (key) {
-      if (data === undefined) {
-        return [value];
-      } else if (isImmutable(data)) {
-        return data;
+      if (data === undefined || data === null) {
+        if (isNumeric(key)) {
+          let array = [];
+          array[key] = value;
+          return array;
+        } else {
+          return {[key]: value};
+        }
+      }
+      else if (isImmutable(data)) {
+        throw new Error(`can't set value ${inspect(value)} by key ${inspect(key)} to immutable data ${inspect(data)}`);
       } else {
         if (data instanceof Array) {
           let copy = data.slice();
