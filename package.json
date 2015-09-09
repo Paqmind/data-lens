@@ -6,7 +6,8 @@
   "scripts": {
     "eslint": "eslint src",
     "mocha": "mocha --compilers js:babel/register specs",
-    "test": "npm run eslint -s && npm run mocha -s",
+    "lint": "npm run eslint -s",
+    "test": "npm run mocha -s",
     "webpack": "webpack --progress --profile --colors",
     "precompile-lib": "rm -rf lib/ && mkdir -p lib",
     "compile-lib": "babel -d lib/ src/",
@@ -39,5 +40,8 @@
     "mocha": "^2.2.5",
     "node-libs-browser": "^0.5.2",
     "webpack": "^1.10.1"
+  },
+  "dependencies": {
+    "is-plain-object": "^2.0.1"
   }
 }

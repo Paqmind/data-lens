@@ -1,18 +1,7 @@
-function getProperties(obj) {
-  let lst = [];
-  for (let key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      lst.push(key);
-    }
-  }
-  return lst;
-}
+import isPlainObject from "is-plain-object";
 
 function isImmutable(data) {
-  return data === undefined ||
-         data === null ||
-         typeof data == "string" ||
-         typeof data == "number";
+  return !(data instanceof Array || isPlainObject(data));
 }
 
 function isNumeric(n) {
@@ -20,5 +9,5 @@ function isNumeric(n) {
 }
 
 export default {
-  getProperties, isImmutable, isNumeric,
+  isImmutable, isNumeric,
 };

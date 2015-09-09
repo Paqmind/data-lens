@@ -1,5 +1,5 @@
 import {inspect} from "util";
-import {getProperties, isImmutable, isNumeric} from "./helpers";
+import {isImmutable, isNumeric} from "./helpers";
 
 // LENS ============================================================================================
 function createGetter(key) {
