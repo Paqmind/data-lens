@@ -1,7 +1,7 @@
-let chai = require("chai");
-let expect = chai.expect;
+import Chai from "chai";
+import Lens from "../src/index";
 
-let Lens = require("../src/index");
+let expect = Chai.expect;
 
 describe("Lens", function () {
   it("should throw for non-string keys", function () {
