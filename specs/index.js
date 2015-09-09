@@ -42,18 +42,9 @@ describe("Lens", function () {
       expect(Lens("tags.2").get({tags: ["foo", "bar"]})).eql(undefined);
     });
 
-    it("should throw for 2+ missing Object keys", function () {
+    it("should throw for immutable data destructuring", function () {
       expect(() => Lens("model.username").get({})).to.throw("can't get key 'username' from immutable data undefined");
       expect(() => Lens("model.username").get({model: null})).to.throw("can't get key 'username' from immutable data null");
-      expect(() => Lens("model.username.wtf").get({model: {}})).to.throw("can't get key 'wtf' from immutable data undefined");
-      expect(() => Lens("model.username.wtf").get({model: {username: null}})).to.throw("can't get key 'wtf' from immutable data null");
-    });
-
-    it("should throw for 2+ missing Array offsets", function () {
-      expect(() => Lens("tags.0").get({})).to.throw("can't get key '0' from immutable data undefined");
-      expect(() => Lens("tags.0").get({tags: null})).to.throw("can't get key '0' from immutable data null");
-      expect(() => Lens("model.tags.0").get({model: {}})).to.throw("can't get key '0' from immutable data undefined");
-      expect(() => Lens("model.tags.0").get({model: {tags: null}})).to.throw("can't get key '0' from immutable data null");
     });
   });
 
