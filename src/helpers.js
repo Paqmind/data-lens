@@ -1,4 +1,10 @@
-import isPlainObject from "is-plain-object";
+function isArray(o) {
+  return toString.call(o) === '[object Array]';
+}
+
+function isPlainObject(o) {
+  return toString.call(o) === '[object Object]';
+}
 
 function isImmutable(data) {
   return !(data instanceof Array || isPlainObject(data));
@@ -9,5 +15,5 @@ function isNumeric(n) {
 }
 
 export default {
-  isImmutable, isNumeric,
+  isArray, isPlainObject, isImmutable, isNumeric,
 };
