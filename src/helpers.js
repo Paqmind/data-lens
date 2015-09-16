@@ -7,7 +7,7 @@ function isPlainObject(o) {
 }
 
 function isImmutable(data) {
-  return !(data instanceof Array || isPlainObject(data));
+  return !(isArray(data) || isPlainObject(data));
 }
 
 function isNumeric(n) {
