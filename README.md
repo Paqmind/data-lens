@@ -5,8 +5,8 @@ Immutable lenses over native JS data.
 
 ## Differences:
 
-1. ES6 syntax
-2. Returns `undefined` for missed object keys following JS behavior
+1. ES6 syntax 
+2. Returns `undefined` for missed keys instead of throwing
 3. Can create nested structure at once
 4. Tests!
 
@@ -31,5 +31,5 @@ console.log(lens.set({username: "john"}, "jack")); // {username: "jack"}
 ### Writes
 
 1. Throws for operations that can't be performed (setting keys to `Number` and `String` types)
-2. Creates desired structure in other cases
+2. Creates desired structure in other cases (mkdirp)
 
